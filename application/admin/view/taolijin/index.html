@@ -1,0 +1,112 @@
+<h1 class="site-h1">淘礼金使用记录</h1>
+<blockquote class="layui-elem-quote">
+    淘礼金使用记录
+</blockquote>
+<!--<div class="filter-form">-->
+<!--    <form class="layui-form" action="">-->
+<!--        <div class="layui-form-item layui-inline">-->
+<!--            <label class="layui-form-label">搜索条件</label>-->
+<!--            <div class="layui-input-inline">-->
+<!--                <select id="filter_type">-->
+<!--                    <option value="">请选择</option>-->
+<!--                    <option value="goodsid">商品ID</option>-->
+<!--                    <option value="uid">会员ID</option>-->
+<!--                    <option value="wxid">微信ID</option>-->
+<!--                    <option value="goodstitle">商品名称</option>-->
+<!--                    <option value="nikename">会员昵称</option>-->
+<!--                </select>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="layui-form-item layui-inline">-->
+<!--            <label class="layui-form-label">搜索关键字</label>-->
+<!--            <div class="layui-input-inline">-->
+<!--                <input type="text" id="search_key" value="" placeholder="请输入" autocomplete="off" class="layui-input">-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="layui-form-item layui-inline">-->
+<!--            <button class="layui-btn layui-btn-normal" id="search_btn">查询</button>-->
+<!--            <button type="reset" class="layui-btn layui-btn-primary" id="reset_btn">重置</button>-->
+<!--        </div>-->
+<!--    </form>-->
+<!--</div>-->
+<table id="table_taolijin" lay-filter="table_taolijin"></table>
+<script type="text/html" id="send_url">
+    <a href="{{d.send_url}}" target="_blank" style="color: orangered;">点击查看</a>
+</script>
+<script type="text/html" id="goodstitle">
+    <a href="https://item.taobao.com/item.htm?id={{d.goodsid}}" target="_blank">{{d.goodstitle}}</a>
+</script>
+<script src="__STATIC__/layui/layui.all.js"></script>
+<script>
+    var element = layui.element
+        ,form = layui.form
+        ,$ = layui.$
+        ,table = layui.table
+
+    //商品列表
+    var tableIns = table.render({
+        elem: '#table_taolijin'
+        ,url: "{:url('Taolijin/tableTaolijin')}"
+        ,page: true
+        ,limit: 10
+        ,cols: [[
+            {field: 'id', title: '#', width:60}
+            ,{field: 'goodstitle', title: '商品标题', width:130, templet: "#goodstitle"}
+            ,{field: 'goodsid', title: '商品ID', width:130}
+            ,{field: 'goods_img', title: '主图', width:90}
+            ,{field: 'name', title: '礼金名称', width: 100}
+            ,{field: 'totalnum', title: '礼金个数', width: 90}
+            ,{field: 'perface', title: '礼金面额(元)', width: 110}
+            ,{field: 'memberid', title: '用户id', width:90}
+            ,{field: 'nikename', title: '认领用户', width:90}
+            ,{field: 'send_url', title: '领取链接', width: 120, templet: "#send_url"}
+            ,{field: 'pwd', title: '淘口令', width: 130}
+            ,{field: 'sendstartdt', title: '发放开始时间', width: 170}
+            ,{field: 'sendenddt', title: '发放截止时间', width: 180}
+            ,{field: 'useday', title: '领取后使用期限(天)', width: 180}
+            ,{field: 'remark', title: '备注', width: 90}
+            ,{field: 'createdt', title: '创建日期', width: 180}
+        ]]
+    });
+    //弹框展示图片
+    $(document).on("click", ".magnifier_img", function () {
+        var theurl = $(this).attr('src');
+        var html = "<img src=' " + theurl + "' loop autoplay='autoplay' style='width: 400px;' />"
+        layer.open({
+            type: 1,
+            area: ["400px"],
+            shadeClose: true,
+            closeBtn: 1, //不显示关闭按钮
+            title:false,
+            content: html //这里content是一个普通的String
+        });
+    });
+
+    $("#search_btn").on("click", function () {
+        var filter_type = $("#filter_type").val();
+        var search_key = $("#search_key").val();
+        if (!filter_type){
+            layer.msg("请选择搜索条件");
+            return false;
+        }
+        if (!search_key){
+            layer.msg("请输入搜索关键字");
+            return false;
+        }
+        tableIns.reload({
+            where: {
+                type: filter_type
+                ,value: search_key
+            }
+        });
+        return false;
+    });
+    $("#reset_btn").on("click", function () {
+        tableIns.reload({
+            where: {
+                type: ""
+                ,value: ""
+            }
+        });
+    })
+</script>

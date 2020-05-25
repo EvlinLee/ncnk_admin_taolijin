@@ -1,0 +1,50 @@
+<h1 class="site-h1">抵扣比例</h1>
+<blockquote class="layui-elem-quote">
+    设置抵扣比例，根据佣金金额来计算比例，例如商品佣金是10元，礼金抵扣比例是50% 那么这个产品生成5元淘礼金用来抵扣！
+    <br />单个淘礼金面额最小为1元，最大为49999元，支持两位小数，但不可超过商品的原价。
+</blockquote>
+<form class="layui-form" action="">
+    <div class="layui-form-item">
+        <label class="layui-form-label">抵扣比例(%)</label>
+        <div class="layui-input-inline">
+            <input type="text" name="proportion" value="{$data['proportion']}" required  lay-verify="required" placeholder="请输入抵扣比例(1-100)" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="*">保存</button>
+        </div>
+    </div>
+</form>
+<script src="__STATIC__/layui/layui.all.js"></script>
+<script>
+    var element = layui.element
+        ,form = layui.form
+        ,$ = layui.$
+
+    // 保存修改
+    form.on('submit(*)', function(data){
+        var data = data.field;
+        var reg = new RegExp("^(\\d|[1-9]\\d|100)$");
+        if(!reg.test(data.proportion) || data.proportion == 0) {
+            layer.msg("请输入1-100的整数值", {icon:2});
+            return false;
+        }
+        $.ajax({
+            type: "post"
+            ,url: "{:url('Deduct/setDeduct')}"
+            ,data: {
+                proportion: data.proportion
+            }
+            ,dataType: "json"
+            ,success: function (res) {
+                if (res.code == "1"){
+                    layer.msg("保存成功", {icon: 1});
+                }else{
+                    layer.msg("保存失败", {icon: 2});
+                }
+            }
+        })
+        return false;
+    });
+</script>

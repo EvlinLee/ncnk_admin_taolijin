@@ -1,0 +1,57 @@
+<h1 class="site-h1">大淘客实时榜单商品</h1>
+<blockquote class="layui-elem-quote">
+    大淘客实时榜单商品
+    <br>每日不定时更新
+</blockquote>
+<table id="table_goods" lay-filter="table_goods"></table>
+<script type="text/html" id="main_pic">
+    <img class="magnifier_img" src='{{d.main_pic}}' style="width: 60px;cursor: pointer;">
+</script>
+<script type="text/html" id="yunfeixian">
+    {{#  if(d.yunfeixian == 0){ }}
+    否
+    {{#  } else { }}
+    是
+    {{#  } }}
+</script>
+<script src="__STATIC__/layui/layui.all.js"></script>
+<script>
+    var element = layui.element
+        ,form = layui.form
+        ,$ = layui.$
+        ,table = layui.table
+
+    //商品列表
+    table.render({
+        elem: '#table_goods'
+        ,url: "{:url('Goods/tableGoods')}"
+        ,page: true
+        ,limit: 10
+        ,cols: [[
+            {field: 'id', title: '#', width:100}
+            ,{field: 'main_pic', title: '主图', width:90, templet: "#main_pic"}
+            ,{field: 'goodsid', title: '商品id', width:130}
+            ,{field: 'title', title: '商品标题'}
+            ,{field: 'commission_rate', title: '佣金比列(%)', width: 120}
+            ,{field: 'original_price', title: '商品原价', width: 90}
+            ,{field: 'coupon_price', title: '优惠券', width: 80}
+            ,{field: 'actual_price', title: '劵后价', width: 90}
+            ,{field: 'yunfeixian', title: '是否包运费险', width: 130, templet: "#yunfeixian"}
+            ,{field: 'create_time', title: '创建时间', width: 180}
+        ]]
+    });
+    //弹框展示图片
+    $(document).on("click", ".magnifier_img", function () {
+        var theurl = $(this).attr('src');
+        var html = "<img src=' " + theurl + "' loop autoplay='autoplay' style='width: 400px;' />"
+        layer.open({
+            type: 1,
+            area: ["400px"],
+            shadeClose: true,
+            closeBtn: 1, //不显示关闭按钮
+            title:false,
+            content: html //这里content是一个普通的String
+        });
+
+    });
+</script>
