@@ -6,7 +6,6 @@ use app\common\model\Goods as GoodsModel;
 use app\common\service\Commodity;
 use app\common\util\ReturnCode;
 use app\common\util\ReturnDesc;
-use dataoke\CheckSign;
 
 class Timeinggoods
 {
@@ -14,8 +13,9 @@ class Timeinggoods
      * 商品入库
      */
     public function dataokeGoods(){
+        include_once EXTEND_PATH . "dataoke/CheckSign.php";
         $dataoke = config("dataoke.");
-        $c = new CheckSign;
+        $c = new \CheckSign;
         $c->host = 'https://openapi.dataoke.com/api/goods/get-ranking-list'; // 接口地址 必填
         $c->appKey = $dataoke["APP_KEY"];
         $c->appSecret = $dataoke["APP_SECRET"];
