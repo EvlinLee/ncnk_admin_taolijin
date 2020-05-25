@@ -29,16 +29,21 @@ class Timeinggoods
             return json(["code"=>ReturnCode::ERROR, "msg"=>ReturnDesc::TAOTAOKE_REQUEST_API, "res"=>$res]);
         }
         $commodity = new Commodity();
-        $commodity->commodityStorage($res["data"]);
+        $res = $commodity->commodityStorage($res["data"]);
+        return $res;
     }
 
     /**
      * 清空商品库
      */
     public function emptyGoods(){
-        $sql = "TRUNCATE `ncnk_goods`";
+        $time = strtotime("-1 day");
+        $start_data = date("Y-m-d 00:00:00", $time);
+        $end_data = date("Y-m-d 23:59:59", $time);
         $goods = new GoodsModel();
-        $goods->query($sql);
+        $goods->whereBetweenTime("create_time", $start_data, $end_data)->delete();
+
+        return json(["code"=>ReturnCode::SUCCESS, "msg"=>"清除成功"]);
     }
 
 }
