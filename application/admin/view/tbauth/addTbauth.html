@@ -1,0 +1,132 @@
+{__NOLAYOUT__}
+<link rel="stylesheet" href="__STATIC__/layui/css/layui.css">
+<style>
+    .input-width {
+        width: 290px !important;
+    }
+</style>
+<div style="margin: 20px auto;">
+    <form class="layui-form" action="">
+        <div class="layui-form-item">
+            <label class="layui-form-label">App Key</label>
+            <div class="layui-input-inline input-width">
+                <input type="text" name="appkey" required  lay-verify="required" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">App Secret</label>
+            <div class="layui-input-inline input-width">
+                <input type="text" name="appsecret" required  lay-verify="required" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">PID</label>
+            <div class="layui-input-inline input-width">
+                <input type="text" name="pid" required  lay-verify="required" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">机器人列表</label>
+            <div class="layui-input-inline input-width">
+                <div id="jiqiren"></div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">备注</label>
+            <div class="layui-input-inline input-width">
+                <textarea name="remark" class="layui-textarea"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="*">保存</button>
+            </div>
+        </div>
+    </form>
+</div>
+<script src="__STATIC__/layui/layui.all.js"></script>
+<script src="__STATIC__/xm-select/xm-select.js"></script>
+<script>
+    var form = layui.form
+        ,$ = layui.$
+        ,layer = layui.layer
+
+
+    $(function () {
+        var user_token = localStorage.getItem("_ncnk_taolijin_token");
+        var size = 10;
+        var select_jiqiren = xmSelect.render({
+            el: '#jiqiren',
+            radio: true,
+            clickClose: true,
+            //配置搜索
+            filterable: false,
+            //配置远程分页
+            paging: true,
+            pageRemote: true,
+            //数据处理
+            remoteMethod: function(val, cb, show, pageIndex){
+                //val: 搜索框的内容, 不开启搜索默认为空, cb: 回调函数, show: 当前下拉框是否展开, pageIndex: 当前第几页
+                $.ajax({
+                    type: "get"
+                    ,url: "https://cloudmanage.nianchu.net/api/5ca310d13e8b3"
+                    ,headers: {"version": "v3.0", "user-token": user_token}
+                    ,data: {
+                        page: pageIndex
+                        ,size: size
+                        ,type: 3
+                        ,keywords: val
+                    }
+                    ,dataType: "json"
+                    ,success: function (res) {
+                        if (res.code != 1) {
+                            layer.msg("机器人列表获取失败", {icon: 2});
+                            return false;
+                        }
+                        var count = res.data.count;//总数量
+                        var totalpage = Math.ceil(count/size);//总页码
+                        var data = res.data.list;//列表
+                        var list_jiqiren = [];
+                        for (var i in data){
+                            list_jiqiren[i] = {name: data[i].nickname, value: data[i].main_id+"&&"+data[i].id};
+                        }
+                        //回调需要两个参数, 第一个: 数据数组, 第二个: 总页码
+                        cb(list_jiqiren, totalpage)
+                    }
+                    ,error: function () {
+                        cb([], 0);
+                    }
+                })
+            }
+        })
+        //监听提交
+        form.on('submit(*)', function(data){
+            var data = data.field;
+            var selectArr = select_jiqiren.getValue("value");
+            if (selectArr.length <= 0){
+                layer.msg("请选择机器人", {icon: 2});
+                return false;
+            }
+            $.ajax({
+                type: "post"
+                ,url: "{:url('Tbauth/addTbConfig')}"
+                ,data:{
+                    jiqiren: selectArr[0]
+                    ,appkey: data.appkey
+                    ,appsecret: data.appsecret
+                    ,pid: data.pid
+                    ,remark: data.remark
+                }
+                ,dataType: "json"
+                ,success: function (res) {
+                    if (res.code == 1) layer.msg("添加成功", {icon: 1});
+                    if (res.code == -1) layer.msg(res.msg, {icon: 2});
+                }
+                ,error: function () {
+                    layer.msg("系统繁忙 请稍后~", {icon: 2});
+                }
+            })
+            return false;
+        });
+    });
+</script>

@@ -37,11 +37,9 @@ class Timeinggoods
      * 清空商品库
      */
     public function emptyGoods(){
-        $time = strtotime("-1 day");
-        $start_data = date("Y-m-d 00:00:00", $time);
-        $end_data = date("Y-m-d 23:59:59", $time);
+        $sql = "TRUNCATE ncnk_goods";
         $goods = new GoodsModel();
-        $goods->whereBetweenTime("create_time", $start_data, $end_data)->delete();
+        $goods->query($sql);
 
         return json(["code"=>ReturnCode::SUCCESS, "msg"=>"清除成功"]);
     }

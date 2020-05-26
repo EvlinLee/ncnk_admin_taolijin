@@ -1,0 +1,120 @@
+<h1 class="site-h1">淘礼金配置</h1>
+<blockquote class="layui-elem-quote">
+    配置淘宝联盟
+</blockquote>
+<table id="table_tbauth" lay-filter="table_tbauth"></table>
+<script type="text/html" id="toolbar_tbauth">
+    <button class="layui-btn layui-btn-sm" lay-event="addtbauto">新增配置</button>
+</script>
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+<script src="__STATIC__/layui/layui.all.js"></script>
+<script>
+    var element = layui.element
+        ,form = layui.form
+        ,$ = layui.$
+        ,table = layui.table
+        ,layer = layui.layer
+
+    //淘礼金配置
+    var tableTbauth = table.render({
+        elem: '#table_tbauth'
+        ,url: "{:url('Tbauth/tableTbauth')}"
+        ,toolbar: '#toolbar_tbauth'
+        ,defaultToolbar: []
+        ,page: true
+        ,limit: 10
+        ,cols: [[
+            {field: 'id', title: '#', width:90}
+            ,{field: 'main_id', title: '主账户ID', width:90}
+            ,{field: 'sub_id', title: '子账户ID', width:90}
+            ,{field: 'appkey', title: 'App Key', width:150}
+            ,{field: 'appsecret', title: 'App Secret', width:250}
+            ,{field: 'pid', title: 'PID', width:250}
+            ,{field: 'remark', title: '备注', width:120}
+            ,{field: 'create_dt', title: '创建时间', width:180}
+            ,{field: 'update_dt', title: '更新时间', width:180}
+            ,{fixed: 'right', title:'操作', toolbar: '#barDemo', width:150}
+        ]]
+    });
+    //弹框展示图片
+    $(document).on("click", ".magnifier_img", function () {
+        var theurl = $(this).attr('src');
+        var html = "<img src=' " + theurl + "' loop autoplay='autoplay' style='width: 400px;' />"
+        layer.open({
+            type: 1,
+            area: ["400px"],
+            shadeClose: true,
+            closeBtn: 1, //不显示关闭按钮
+            title:false,
+            content: html //这里content是一个普通的String
+        });
+    });
+    //监听头工具事件
+    table.on('toolbar(table_tbauth)', function(obj){
+        switch(obj.event) {
+            //添加淘礼金配置
+            case "addtbauto":
+                layer.open({
+                    type: 2,
+                    title: '新增配置',
+                    shadeClose: false,
+                    shade: 0.8,
+                    closeBtn: 2,
+                    area: ['600px', '650px'],
+                    content: "{:url('Tbauth/addTbauth')}",
+                    end: function () {
+                        tableTbauth.reload();
+                    }
+                });
+                break;
+        }
+    })
+    //监听行工具事件
+    table.on('tool(table_tbauth)', function(obj){
+        var data = obj.data;
+        if(obj.event === 'del'){
+            layer.confirm('确定删除', {icon: 3, title: "删除提醒"}, function(index){
+                layer.close(index);
+                deleteTbauth(data.id, obj);
+            });
+        } else if(obj.event === 'edit'){
+            layer.open({
+                type: 2,
+                title: '编辑配置',
+                shadeClose: false,
+                shade: 0.8,
+                closeBtn: 2,
+                area: ['600px', '650px'],
+                content: "{:url('Tbauth/setTbauth')}?id="+data.id,
+                end: function () {
+                    tableTbauth.reload();
+                }
+            });
+        }
+    });
+    //删除
+    function deleteTbauth(id, obj) {
+        $.ajax({
+            type: "post"
+            ,url: "{:url('Tbauth/deleteTbConfig')}"
+            ,data:{
+                id: id
+            }
+            ,dataType: "json"
+            ,success: function (res) {
+                if (res.code == 1){
+                    obj.del();
+                    layer.msg("删除成功", {icon: 1});
+                }else{
+                    layer.msg(res.msg, {icon: 2});
+                }
+            }
+            ,error: function () {
+                layer.msg("系统繁忙 请稍后~", {icon: 2});
+            }
+        })
+    }
+</script>
