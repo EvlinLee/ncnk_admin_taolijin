@@ -45,14 +45,14 @@ class Tbauth extends Base
             "uid"=>$this->userInfo["id"]
             ,"main_id"=>$jiqiren_arr[0]
             ,"sub_id"=>$jiqiren_arr[1]
-            ,"appkey"=>$appkey
-            ,"appsecret"=>$appsecret
-            ,"pid"=>$pid
         ];
         $tbauthObj = $tbauth->where($data)->find();
-        if ($tbauthObj) return $this->buildFailed(ReturnCode::ERROR, "配置已存在");
+        if ($tbauthObj) return $this->buildFailed(ReturnCode::ERROR, "该机器人已存在配置");
         $dataDt = [
-            "remark"=>$remark
+            "appkey"=>$appkey
+            ,"appsecret"=>$appsecret
+            ,"pid"=>$pid
+            ,"remark"=>$remark
             ,"create_dt"=>date("Y-m-d H:i:s")
             ,"update_dt"=>date("Y-m-d H:i:s")
         ];
