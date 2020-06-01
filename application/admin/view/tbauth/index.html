@@ -1,6 +1,7 @@
 <h1 class="site-h1">淘礼金配置</h1>
 <blockquote class="layui-elem-quote">
-    配置淘宝联盟
+    使用淘礼金需要获得两个权限<br>
+    <img class="img-amplification" src="__STATIC__/img/auth.png" alt="权限"">
 </blockquote>
 <table id="table_tbauth" lay-filter="table_tbauth"></table>
 <script type="text/html" id="toolbar_tbauth">
@@ -42,7 +43,7 @@
     //弹框展示图片
     $(document).on("click", ".magnifier_img", function () {
         var theurl = $(this).attr('src');
-        var html = "<img src=' " + theurl + "' loop autoplay='autoplay' style='width: 400px;' />"
+        var html = `<img src=" + theurl + " style="width: 400px;" />`;
         layer.open({
             type: 1,
             area: ["400px"],
@@ -117,4 +118,17 @@
             }
         })
     }
+    //点击图片放大
+    $(document).on("click", ".img-amplification", function () {
+        var imgUrl = $(this).attr("src");
+        var html = "<img src=' " + imgUrl + "' loop autoplay='autoplay' />"
+        layer.open({
+            type: 1,
+            area: ["auto"],
+            shadeClose: true,
+            closeBtn: 1, //不显示关闭按钮
+            title:false,
+            content: html //这里content是一个普通的String
+        });
+    })
 </script>
